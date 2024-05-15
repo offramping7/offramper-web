@@ -1,0 +1,11 @@
+{
+  "createOfframpAddress.requisites":"Info for the account you're withdrawing money to",
+  "to":"to",
+  "createOfframpAddress.bottomText":"Please pick one of the options above",
+  "First Name":"First Name",
+  "Last Name":"Last Name",
+  "Pick bank":"Pick bank",
+  "Contact phone number":"Contact phone number",
+  "recipient.reachabilityWarning":"Please make sure that this contact number is reachable via WhatsApp, Telegram, or SMS. Otherwise, your funds could be lost",
+  "Continue":"Continue"
+}

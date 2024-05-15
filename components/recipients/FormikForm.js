@@ -17,9 +17,8 @@ import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
-const t = (stri) => {
-  return stri
-}
+
+
 
 const phoneBlacklist = ["972548951056"];
 
@@ -30,10 +29,13 @@ const validatePhoneBlacklist = (number) => {
   return true;
 };
 
-const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
+const FormikForm = ({translationJson,handleBlur, handleChange,isSubmitting,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
   const {strategy} = bankNameStrategy
   const [askBankName,setAskBankName] = useState(strategy === 'ask')
-  
+  const t = (str) => {
+    return translationJson[str] || str
+  }
+
 
   
   const language = 'ru'
@@ -151,7 +153,7 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeDescr
                   }
                 >
                   <option value={"defaultBank"} key={"defaultBank"}>
-                    {t("Выберите банк")}
+                    {t("Pick bank")}
                   </option>
                   {banks
                     .map((bankName) => {
@@ -194,8 +196,10 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeDescr
                   />
                 </Form.Group>
 
-              
-                {t("Please make sure that this contact number is reachable via WhatsApp, Telegram, or SMS. Otherwise, your funds could be lost")}
+              <div className="text-center text-muted">
+              {t("recipient.reachabilityWarning")}
+              </div>
+                
                 <Button
                   className="w-100 my-2"
                   type="submit"
