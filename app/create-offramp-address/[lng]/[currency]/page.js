@@ -1,14 +1,16 @@
 import { fetchAvailablePayoutOptionTypesByCurrency } from "@/lib/payoutOptionTypes";
+import {fetchTranslations} from "@/lib/translations"
 import Link from "next/link";
 import Image from "next/image"
 
-const t = (stri) => {
-  return stri
-}
+
 
 const Page = async ({ params }) => {
-  const lng = "ru";
-  const { currency } = params;
+  const { currency,lng } = params;
+  const translationJson = await fetchTranslations({lng})
+  const t = (str) => {
+    return translationJson[str] || str
+  }
   const payoutOptionTypes = await fetchAvailablePayoutOptionTypesByCurrency({
     currency,
   }); //should return full docs
@@ -21,14 +23,15 @@ const Page = async ({ params }) => {
         <div className="col-1"> </div>
         <div className="col-10">
           <h4 className="text-center mt-5 pt-5 text-muted">
-          {t("Реквезиты счета на который вы хотели бы вывести деньги")}
+
+          {t("createOfframpAddress.requisites")}
           </h4>
           {payoutOptionTypes.map((payoutOptionType) => {
             return (
               // <div className="shadow rounded bg-white my-3 py-3">
                   <Link
                     key={payoutOptionType.payoutOptionTypeKey}
-                    href={`/create-offramp-address/${currency}/${payoutOptionType.payoutOptionTypeKey}`}
+                    href={`/create-offramp-address/${lng}/${currency}/${payoutOptionType.payoutOptionTypeKey}`}
                     className="shadow rounded bg-white my-3 py-3 w-100"
                   >
                     <div className="row mx-auto">
@@ -48,7 +51,7 @@ const Page = async ({ params }) => {
                       {payoutOptionType.payoutOptionTypeDescriptions[lng]}
                     </div>
                     <div className="text-muted">
-                      {t("на")} {payoutOptionType.bankSpecificFieldDescriptions[lng]}
+                      {t("to")} {payoutOptionType.bankSpecificFieldDescriptions[lng]}
                     </div>
                     </div>
                       </div>
@@ -60,7 +63,7 @@ const Page = async ({ params }) => {
             );
           })}
           <h6 className="text-center text-muted mt-3">
-          {t("Пожалуйста выберите одну из опции выше")}
+          {t("createOfframpAddress.bottomText")}
           </h6>
         </div>
         <div className="col-1"> </div>

@@ -1,0 +1,11 @@
+{
+    "createOfframpAddress.requisites":"Реквезиты счета на который вы хотели бы вывести деньги",
+    "to":"на",
+    "createOfframpAddress.bottomText":"Пожалуйста выберите одну из опции выше",
+    "First Name":"Имя",
+    "Last Name":"Фамилия",
+    "Pick bank":"Выберите банк",
+    "Contact phone number":"Контакнтый номер для обратной связи",
+    "recipient.reachabilityWarning":"Просим убедиться что с данным номером можно связаться через WhatsApp, Telegram, или СМС. Иначе, ваши средства могут быть потерянны",
+    "Continue":"Продолжить"
+  }

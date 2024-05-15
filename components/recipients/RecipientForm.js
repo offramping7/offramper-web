@@ -18,21 +18,24 @@ import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
 import FormikForm from "./FormikForm"
+
+
 // Schema for yup
 
 
-const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
+const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
   const [locError, setLocError] = useState(false);
   
-
+  const t = (str) => {
+    return translationJson[str] || str
+  }
   const generatedValidationSchema = buildValidationSchema({bankSpecificFieldKey})
   const bankNameFixedValue = bankNameStrategy?.value
   const {strategy} = bankNameStrategy
   
 
-  const t = (stri) => {
-    return stri
-  }
+  
+
   const language = 'ru'
 
   const myInitialValues = {
@@ -86,7 +89,6 @@ const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSp
 
   return (
     <div className="mt-3 shadow rounded">
-      
       {locError === true ? (
         <h5 className="text-center text-muted px-1 my-5">
           {" "}
@@ -121,7 +123,7 @@ const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSp
             }) => (
               <Form onSubmit={handleSubmit} className="mx-auto">
 
-             <FormikForm currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
+             <FormikForm translationJson={translationJson} currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
              payoutOptionTypeDescription={payoutOptionTypeDescription}
              bankSpecificFieldKey={bankSpecificFieldKey}
              bankSpecificFieldDescription={bankSpecificFieldDescription}
@@ -223,3 +225,7 @@ const buildValidationSchema = ({ bankSpecificFieldKey }) => {
   });
   return mySchema
 };
+
+
+
+
