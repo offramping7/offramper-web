@@ -95,7 +95,7 @@
   position: absolute;
 }
 .ctn-preloader .animation-preloader .txt-loading .letters-loading {
-  font-family: "Recoleta";
+  font-family: "PT_Sans";
   font-weight: 700;
   letter-spacing: 12px;
   display: inline-block;
@@ -264,8 +264,8 @@ p {
 .p-30 {
   padding: 30px;
 }
-.font-recoleta {
-  font-family: "Recoleta";
+.font-PT_Sans {
+  font-family: "PT_Sans";
 }
 .text-lg {
   font-size: 24px;
@@ -378,7 +378,7 @@ p {
   color: rgba(0, 0, 0, 0.3);
 }
 .title-style-three .main-title {
-  font-family: "Recoleta";
+  font-family: "PT_Sans";
   font-size: 64px;
   line-height: 1.15em;
   margin: 0;
@@ -10474,3 +10474,18 @@ body .btn-twentySix:hover:after {
   background-size: cover;
   background: linear-gradient(90deg, rgba(202,243,251,1) 15%, rgba(255,255,255,1) 33%);
 }
+
+.gradient-bg-maker-wiener-radial {
+  position: relative;
+  background-size: cover;
+  background: radial-gradient(circle, rgba(255,255,255,1) 41%, rgba(171,171,255,1) 77%);
+}
+
+.bg-nice-and-gray {
+  background-color: #f1f1f2;
+}
+
+.fa {
+  color : gold;
+}
+//radial-gradient(circle, rgba(255,255,255,1) 41%, rgba(171,171,255,1) 77%);

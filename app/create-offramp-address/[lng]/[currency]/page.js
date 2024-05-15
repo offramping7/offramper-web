@@ -3,6 +3,7 @@ import { fetchTranslations } from "@/lib/translations";
 import Link from "next/link";
 import Image from "next/image";
 
+
 const Page = async ({ params }) => {
   const { currency, lng } = params;
   const translationJson = await fetchTranslations({ lng });

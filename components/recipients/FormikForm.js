@@ -17,7 +17,8 @@ import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
-
+import { faCreditCard } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 const phoneBlacklist = ["972548951056"];
@@ -73,7 +74,7 @@ const FormikForm = ({translationJson,handleBlur, handleChange,isSubmitting,payou
   },[values.bankSpecificFieldValue])
 
   return (
-   <div>
+   <div className="container shadow rounded mx-1 px-3 py-3">
                 <Row className="mt-3">
                   <Col>
                     <Form.Group controlId="firstName">
@@ -277,8 +278,16 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
   } else {
     return (
       <> 
-      <input {...props} {...field}  className="border rounded py-2 w-100 px-3 my-auto"/>
-      {!!meta.touched && !!meta.error && <div>{meta.error}</div>}
+      
+      <div className="row border rounded py-2 px-1 mx-1">
+        <div className="col-1"><FontAwesomeIcon icon={faCreditCard} color="Tomato"/></div>
+              <div className="col-8">
+              <input {...props} {...field}  className="border-0" />
+     
+      </div>
+            </div>
+            {!!meta.touched && !!meta.error && <div>{meta.error}</div>}
+      
     </>
     )
   }
