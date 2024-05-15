@@ -10466,3 +10466,11 @@ body .btn-twentySix:hover:after {
   top: 65%;
   left: 72%;
 }
+
+
+
+.gradient-bg-maker-wiener {
+  position: relative;
+  background-size: cover;
+  background: linear-gradient(90deg, rgba(202,243,251,1) 15%, rgba(255,255,255,1) 33%);
+}
