@@ -1,24 +1,36 @@
 import RecipientForm from "@/components/recipients/RecipientForm";
 import {fetchPayoutOptionTypeDataByKey} from "@/lib/payoutOptionTypes"
-import {fetchBanksByCurrency} from "@/lib/banks"
+import {fetchBankNamesByCurrency} from "@/lib/banks"
 import {fetchBankBinsByCurrency} from "@/lib/bankBins"
 
 const Page = async ({params}) => {
     const {currency,payoutOptionTypeKey} = params
-    const payoutOptionTypeData = await fetchPayoutOptionTypeDataByKey({payoutOptionTypeKey})
-    const banks = await fetchBanksByCurrency({currency})
-    const bankBins = await fetchBankBinsByCurrency({currency})
     const lng = 'ru'
 
+    const payoutOptionTypeData = await fetchPayoutOptionTypeDataByKey({payoutOptionTypeKey})
+    const {payoutOptionTypeDescriptions,bankSpecificFieldKey,bankSpecificFieldDescriptions,bankNameStrategy} = payoutOptionTypeData
+    const payoutOptionTypeDescription = payoutOptionTypeDescriptions[lng]
+    const bankSpecificFieldDescription = bankSpecificFieldDescriptions[lng]
 
-
-
-  //here you render the 3 payout option types available as white buttons
+    const banks = await fetchBankNamesByCurrency({currency})
+    const bankBins = await fetchBankBinsByCurrency({currency})
   return (
     <>
-    <RecipientForm lng={lng} currency={currency} payoutOptionTypeData={payoutOptionTypeData} banks={banks} bankBins={bankBins}/>
+     <h4 className="text-center mt-5 pt-5 text-muted">
+          {t("Реквезиты счета на который вы хотели бы вывести деньги")}
+          </h4>
+    <RecipientForm currency={currency} 
+    payoutOptionTypeDescription={payoutOptionTypeDescription}
+    bankSpecificFieldKey={bankSpecificFieldKey}
+    bankSpecificFieldDescription={bankSpecificFieldDescription}
+    bankNameStrategy={bankNameStrategy}
+    banks={banks} bankBins={bankBins}/>
      </>
   );
 };
 
 export default Page;
+
+const t = (stri) => {
+  return stri
+}

@@ -17,13 +17,10 @@ import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
+const t = (stri) => {
+  return stri
+}
 
-// Schema for yup
-const bankSpecificFieldValueBlacklist = [
-  "4100118308942379",
-  "4100118604310894",
-  "5599002064902101",
-];
 const phoneBlacklist = ["972548951056"];
 
 const validatePhoneBlacklist = (number) => {
@@ -33,87 +30,12 @@ const validatePhoneBlacklist = (number) => {
   return true;
 };
 
-const validateBankSpecificFieldValueBlacklist = (number) => {
-  if (bankSpecificFieldValueBlacklist.includes(number)) {
-    return false;
-  }
-  return true;
-};
-const validateYooNumber = (cardNumber) => {
-  var strFirstFour = cardNumber.substring(0, 4);
-  return strFirstFour === "4100";
-};
-const validateCardNumber = (cardNumber) => {
-  return is2.creditCardNumber(cardNumber.replace(/\s+/g, ""));
-};
-
-const buildValidationSchema = ({ bankSpecificFieldKey }) => {
-  //countryCode CAN BE NULL or UNDEFNED!
-  const bankSpecificFieldValueSchemaMap = {
-    yooMoneyWalletNumber: Yup.string()
-      .min(16, "*Too short")
-      .max(16, "*Too long")
-      .test(
-        "test-number",
-        "Invalid: YooMoney Wallet Number should start with 4100",
-        (value) =>
-          validateBankSpecificFieldValueBlacklist(value) &&
-          validateYooNumber(value)
-      )
-      .required("* Required"),
-    cardNumber: Yup.string()
-      .test(
-        "test-number",
-        "Invalid",
-        (value) =>
-          validateCardNumber(value) &&
-          validateBankSpecificFieldValueBlacklist(value)
-      )
-      .required("* Required"),
-    phoneNumber: Yup.string().min(11, "*Too short").required("*Required"),
-  };
-
-  const bankSpecificFieldValueSchema =
-    bankSpecificFieldValueSchemaMap[bankSpecificFieldKey];
-
-  return Yup.object().shape({
-    bankName: Yup.string()
-      .test(
-        "test-bank",
-        "Error: please select bank",
-        (value) => value != "defaultBank"
-      )
-      .required("*Bank is required"),
-    firstName: Yup.string()
-      .min(2, "*Too short")
-      .max(100, "*Too long")
-      .required("*First Name is required"),
-    lastName: Yup.string()
-      .min(2, "*Too short")
-      .max(100, "*Too long")
-      .required("*Last Name is required"),
-    phoneNumber: Yup.string()
-      .min(11, "*Too short")
-      .test("test-number", "Invalid", (value) => validatePhoneBlacklist(value))
-      .required("*Required"),
-    bankSpecificFieldValue: bankSpecificFieldValueSchema,
-  });
-};
-const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData, currency, bankBins, banks,lng }) => {
-  const [locError, setLocError] = useState(false);
-  
-
-  const {payoutOptionTypeKey,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy} = payoutOptionTypeData
-  const payoutOptionTypeDescriptionTranslated = payoutOptionTypeDescription[lng]
-  const bankSpecificFieldDescriptionTranslated = bankSpecificFieldDescription[lng]
+const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
   const {strategy} = bankNameStrategy
-  const bankNameFixedValue = bankNameStrategy.value
   const [askBankName,setAskBankName] = useState(strategy === 'ask')
   
 
-  const t = (stri) => {
-    return stri
-  }
+  
   const language = 'ru'
 
 
@@ -147,7 +69,6 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData,
     }
     
   },[values.bankSpecificFieldValue])
-  // const {strategy,fixedValue} = bankNameStrategy//fixedValue can be null (fixed only at yoomoney)
 
   return (
    <div>
@@ -198,7 +119,7 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData,
 
                 <Form.Group
                   controlId="bankSpecificFieldValue"
-                  className="mx-auto mt-2"
+                  className="mx-auto mt-3 pt-3"
                 >
                   
                   <Form.Control
@@ -212,8 +133,9 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData,
                     language={language}
                     gotErrorFromAbove={errors.bankSpecificFieldValue}
                     bankSpecificFieldKey={bankSpecificFieldKey}
-                    payoutOptionTypeDescriptionTranslated={payoutOptionTypeDescriptionTranslated}
-                    bankSpecificFieldDescriptionTranslated={payoutOptionTypeData.bankSpecificFieldDescription[lng]}
+                    // payoutOptionTypeDescription={payoutOptionTypeDescription}
+                    // bankSpecificFieldDescription={bankSpecificFieldDescription}
+                    placeholder={capitalizeFirstLetter(bankSpecificFieldDescription)}
                     className="border-0"
                   />
                 </Form.Group>
@@ -229,7 +151,7 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData,
                   }
                 >
                   <option value={"defaultBank"} key={"defaultBank"}>
-                    {lng === "ru" ? "Выберите банк" : "Choose bank"}
+                    {t("Выберите банк")}
                   </option>
                   {banks
                     .map((bankName) => {
@@ -268,6 +190,7 @@ const FormikForm = ({handleBlur, handleChange,isSubmitting,payoutOptionTypeData,
                     language={language}
                     gotErrorFromAbove={errors.phoneNumber}
                     className="border-0"
+                    
                   />
                 </Form.Group>
 
@@ -318,13 +241,15 @@ export default FormikForm;
 
 
 const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => {
-  const {bankSpecificFieldKey,bankSpecificFieldDescriptionTranslated,payoutOptionTypeDescriptionTranslated} = props
+  const {bankSpecificFieldKey} = props
   const [field, meta, helpers] = useField(props.name);
  
   if (bankSpecificFieldKey === 'phoneNumber') {
     return (
       <>
-      {bankSpecificFieldDescriptionTranslated} {payoutOptionTypeDescriptionTranslated}
+      <div className="text-muted mb-1 pb-1">
+        {props.placeholder}
+      </div>
       <PhoneInput
         {...props}
         {...field}
@@ -336,7 +261,6 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
         containerClass="w-100"
         inputClass="w-100"
         country={country}
-        placeholder={bankSpecificFieldDescriptionTranslated}
         containerStyle={{ margin: "0px", padding: "0px" }}
         inputStyle={{ height: "25%" }}
         isValid={(value, country) => {
@@ -348,8 +272,8 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
     );
   } else {
     return (
-      <> {bankSpecificFieldDescriptionTranslated}
-      <input {...props} {...field}  className="border rounded py-2 w-100 px-3"/>
+      <> 
+      <input {...props} {...field}  className="border rounded py-2 w-100 px-3 my-auto"/>
       {!!meta.touched && !!meta.error && <div>{meta.error}</div>}
     </>
     )
@@ -367,3 +291,8 @@ const inferBankFromBin = ({cardNumber, bankBins}) => {
 }
 
 
+
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

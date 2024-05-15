@@ -19,6 +19,128 @@ import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
 import FormikForm from "./FormikForm"
 // Schema for yup
+
+
+const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
+  const [locError, setLocError] = useState(false);
+  
+
+  const generatedValidationSchema = buildValidationSchema({bankSpecificFieldKey})
+  const bankNameFixedValue = bankNameStrategy?.value
+  const {strategy} = bankNameStrategy
+  
+
+  const t = (stri) => {
+    return stri
+  }
+  const language = 'ru'
+
+  const myInitialValues = {
+    bankName: strategy === 'fixedValue' ? bankNameFixedValue : "defaultBank",
+    firstName: "",
+    lastName: "",
+    bankSpecificFieldValue: "",
+    phoneNumber: "",
+  }
+
+
+  useEffect(() => {
+    getGeoInfo().then((countryCode) => {
+      if (countryCode == "KZ") {
+        setLocError(true);
+      }
+      if (
+        countryCode == "IL" &&
+        bankSpecificFieldKey == "yooMoneyWalletNumber"
+      ) {
+        setLocError(true);
+      }
+    });
+  }, []);
+
+  const submitHandler = (values) => {
+    const addOfframpAddressPayload = {
+      currency: currency,
+      bankName: values.bankName,
+      nickname: values.firstName + " " + values.lastName,
+      phoneNumber: values.phoneNumber,
+      bankSpecificFieldValue: values.bankSpecificFieldValue,
+    };
+        return createOfframpAddress(addOfframpAddressPayload).then((data) => {
+      const { address, blockchain, cryptocurrency } = data;
+      if (!!address && !!blockchain && !!cryptocurrency) {
+        const backendRes = {
+          address,
+          blockchain,
+          nickname: values.firstName + " " + values.lastName,
+          cryptocurrency,
+        };
+        return backendRes;
+      }
+    });
+  };
+  const handleSubmitReturnedPostIframe = (backendRes) => {
+    toast(language === "ru" ? "Успешно!" : "Success!");
+    window.parent.postMessage(backendRes, "*");
+  };
+
+  return (
+    <div className="mt-3 shadow rounded">
+      
+      {locError === true ? (
+        <h5 className="text-center text-muted px-1 my-5">
+          {" "}
+          Service Unavailable
+        </h5>
+      ) : (
+        <Container className="border-0 rounded mt-2">
+          <Formik
+            initialValues={myInitialValues}
+            validationSchema={generatedValidationSchema}
+            onSubmit={(values, { setSubmitting, resetForm }) => {
+              setSubmitting(true);
+
+              submitHandler(values)
+                .then((backendRes) =>
+                  handleSubmitReturnedPostIframe(backendRes)
+                )
+                .then(() => {
+                  resetForm();
+                  setSubmitting(false);
+                });
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <Form onSubmit={handleSubmit} className="mx-auto">
+
+             <FormikForm currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
+             payoutOptionTypeDescription={payoutOptionTypeDescription}
+             bankSpecificFieldKey={bankSpecificFieldKey}
+             bankSpecificFieldDescription={bankSpecificFieldDescription}
+             bankNameStrategy={bankNameStrategy}
+            bankBins={bankBins} banks={banks} lng={lng} />
+              </Form>
+            )}
+          </Formik>
+          <ToastContainer />
+        </Container>
+      )}
+    </div>
+  );
+};
+
+
+export default RecipientForm;
+
+
 const bankSpecificFieldValueBlacklist = [
   "4100118308942379",
   "4100118604310894",
@@ -101,120 +223,3 @@ const buildValidationSchema = ({ bankSpecificFieldKey }) => {
   });
   return mySchema
 };
-
-const RecipientForm = ({ payoutOptionTypeData, currency, bankBins, banks,lng }) => {
-  const [locError, setLocError] = useState(false);
-  
-
-  const {bankSpecificFieldKey} = payoutOptionTypeData
-  const generatedValidationSchema = buildValidationSchema({bankSpecificFieldKey})
-  const bankNameFixedValue = payoutOptionTypeData.bankNameStrategy?.value
-  
-
-  const t = (stri) => {
-    return stri
-  }
-  const language = 'ru'
-
-  const myInitialValues = {
-    bankName: bankNameFixedValue || "defaultBank",
-    firstName: "",
-    lastName: "",
-    bankSpecificFieldValue: "",
-    phoneNumber: "",
-  }
-
-
-  useEffect(() => {
-    getGeoInfo().then((countryCode) => {
-      if (countryCode == "KZ") {
-        setLocError(true);
-      }
-      if (
-        countryCode == "IL" &&
-        payoutOptionTypeData.payoutOptionTypeKey == "yooMoney"
-      ) {
-        setLocError(true);
-      }
-    });
-  }, []);
-
-  const submitHandler = (values) => {
-    const addOfframpAddressPayload = {
-      currency: currency,
-      bankName: values.bankName,
-      nickname: values.firstName + " " + values.lastName,
-      phoneNumber: values.phoneNumber,
-      bankSpecificFieldValue: values.bankSpecificFieldValue,
-    };
-        return createOfframpAddress(addOfframpAddressPayload).then((data) => {
-      const { address, blockchain, cryptocurrency } = data;
-      if (!!address && !!blockchain && !!cryptocurrency) {
-        const backendRes = {
-          address,
-          blockchain,
-          nickname: values.firstName + " " + values.lastName,
-          cryptocurrency,
-        };
-        return backendRes;
-      }
-    });
-  };
-  const handleSubmitReturnedPostIframe = (backendRes) => {
-    toast(language === "ru" ? "Успешно!" : "Success!");
-    window.parent.postMessage(backendRes, "*");
-  };
-
-  return (
-    <div className="mt-3">
-      <h5 className="text-center text-muted px-1">
-        {t("Info for the card you're withdrawing money to")}
-      </h5>
-      {locError === true ? (
-        <h5 className="text-center text-muted px-1 my-5">
-          {" "}
-          Service Unavailable
-        </h5>
-      ) : (
-        <Container className="border-0 rounded mt-2">
-          <Formik
-            initialValues={myInitialValues}
-            validationSchema={generatedValidationSchema}
-            onSubmit={(values, { setSubmitting, resetForm }) => {
-              setSubmitting(true);
-
-              submitHandler(values)
-                .then((backendRes) =>
-                  handleSubmitReturnedPostIframe(backendRes)
-                )
-                .then(() => {
-                  resetForm();
-                  setSubmitting(false);
-                });
-            }}
-          >
-            {/* Callback function containing Formik state and helpers that handle common form actions */}
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              isSubmitting,
-            }) => (
-              <Form onSubmit={handleSubmit} className="mx-auto">
-
-             < FormikForm currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting} payoutOptionTypeData={payoutOptionTypeData} currenc={currency} bankBins={bankBins} banks={banks} lng={lng} />
-              </Form>
-            )}
-          </Formik>
-          <ToastContainer />
-        </Container>
-      )}
-    </div>
-  );
-};
-
-
-export default RecipientForm;
