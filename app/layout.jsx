@@ -2,9 +2,14 @@
 
 import Aos from "aos";
 import { useEffect } from "react";
+import { PT_Sans } from 'next/font/google'
+
 import "aos/dist/aos.css";
-import "../styles/index.scss";
+import "@/styles/index.scss";
 import ScrollToTop from "@/components/common/ScrollTop";
+
+
+const myFont = PT_Sans({ weight: "700", subsets: ["cyrillic"] });
 
 if (typeof window !== "undefined") {
   require("bootstrap/dist/js/bootstrap");
@@ -17,7 +22,7 @@ export default function RootLayout({ children }) {
     });
   }, []);
   return (
-    <html lang="en">
+    <html lang="en" className={myFont.className}>
       <body>
         <div className="main-page-wrapper">
           {children}
@@ -25,5 +30,6 @@ export default function RootLayout({ children }) {
         </div>
       </body>
     </html>
+    
   );
 }

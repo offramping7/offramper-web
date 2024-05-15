@@ -88,7 +88,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
   };
 
   return (
-    <div className="mt-3 shadow rounded">
+    <div className="mt-3">
       {locError === true ? (
         <h5 className="text-center text-muted px-1 my-5">
           {" "}
