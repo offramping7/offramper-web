@@ -85,7 +85,7 @@ const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSp
   };
 
   return (
-    <div className="mt-3">
+    <div className="mt-3 shadow rounded">
       
       {locError === true ? (
         <h5 className="text-center text-muted px-1 my-5">
@@ -121,7 +121,7 @@ const RecipientForm = ({ payoutOptionTypeDescription,bankSpecificFieldKey,bankSp
             }) => (
               <Form onSubmit={handleSubmit} className="mx-auto">
 
-             < FormikForm currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
+             <FormikForm currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
              payoutOptionTypeDescription={payoutOptionTypeDescription}
              bankSpecificFieldKey={bankSpecificFieldKey}
              bankSpecificFieldDescription={bankSpecificFieldDescription}
