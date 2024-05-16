@@ -28,8 +28,9 @@ export const RecipientSchemaForYooMoneyWalletNumber =  Yup.object().shape({
       "test-number",
       "Invalid: YooMoney Wallet Number should start with 4100",
       (value) =>
-        validateBankSpecificFieldValueBlacklist(value) &&
-        validateYooNumber(value)
+        {const trimmed = value.replace(" ","")
+          return validateBankSpecificFieldValueBlacklist(trimmed) &&
+        validateYooNumber(trimmed)}
     )
     .required("* Required"),
   });
@@ -57,10 +58,10 @@ export const RecipientSchemaForYooMoneyWalletNumber =  Yup.object().shape({
     bankSpecificFieldValue: Yup.string()
     .test(
       "test-number",
-      "Invalid!!!!!!!!!!!!!!!!!!!!!",
+      "Invalid Card Number..",
       (value) =>
-        validateCardNumber(value) &&
-        validateBankSpecificFieldValueBlacklist(value)
+      { const trimmed = value.replace(" ","")
+        return validateCardNumber(trimmed) && validateBankSpecificFieldValueBlacklist(trimmed)}
     )
     .required("* Required"),
   });

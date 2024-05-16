@@ -201,7 +201,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
                   />
                 </Form.Group>
                 <div className="py-3 ">
-                  <BankNameInferrer handleSetAskBankeName={(val)=> {setAskBankName(val)}} bankBins={bankBins} strategy={strategy}/>
+                  <BankNameInferrer banks={banks} handleSetAskBankeName={(val)=> {setAskBankName(val)}} bankBins={bankBins} strategy={strategy}/>
                 {askBankName && 
                 <Form.Group controlId="bankName">
                 <Form.Select
@@ -394,13 +394,15 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
+const BankNameInferrer = ({banks,bankBins,strategy,handleSetAskBankeName}) => {
   const {
     values,
     touched,
     setFieldValue,
     errors,isSubmitting
   } = useFormikContext();
+
+  
 
   useEffect(()=>{
     console.log("bankSpecificFieldValue use effect triggered..")
@@ -413,10 +415,10 @@ const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
     //   return
     // }
     if (
-      values.bankSpecificFieldValue.length > 5
+      values.bankSpecificFieldValue.replace(" ","").length > 5
     ) {
       console.log("going to infer now..")
-      const inferredBankName = inferBankFromBin({cardNumber:values.bankSpecificFieldValue,bankBins:bankBins})
+      const inferredBankName = inferBankFromBin({cardNumber:values.bankSpecificFieldValue.replace(" ",""),bankBins:bankBins})
       if (!!inferredBankName) {
         console.log("i have inferred!: ", inferredBankName)
         setFieldValue("bankName",inferredBankName);
@@ -428,6 +430,7 @@ const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
       }
     } else {
       console.log("omit inferring cuz too short.")
+      setFieldValue("bankName","");
       handleSetAskBankeName(false)
     }
     
