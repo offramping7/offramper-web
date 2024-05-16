@@ -10,28 +10,32 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { createOfframpAddress, getGeoInfo } from "@/backend/requests";
-import * as is2 from "is2";
 import { ToastContainer,toast } from "react-toastify";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
-import * as Yup from "yup";
-import FormikForm from "./FormikForm"
-
-
+import Image from "next/image"
+import {RecipientSchemaForYooMoneyWalletNumber,RecipientSchemaForPhoneNumber,RecipientSchemaForCardNumber} from "./YupSchemas"
 // Schema for yup
 
 
 const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
   const [locError, setLocError] = useState(false);
+  const bankNameFixedValue = bankNameStrategy?.value
+  const {strategy} = bankNameStrategy
+  const [askBankName,setAskBankName] = useState(strategy === 'ask')
   
   const t = (str) => {
     return translationJson[str] || str
   }
-  const generatedValidationSchema = buildValidationSchema({bankSpecificFieldKey})
-  const bankNameFixedValue = bankNameStrategy?.value
-  const {strategy} = bankNameStrategy
+  
+  const mapper = {
+    cardNumber:RecipientSchemaForCardNumber,
+    phoneNumber:RecipientSchemaForPhoneNumber,
+    yooMoneyWalletNumber:RecipientSchemaForYooMoneyWalletNumber
+  }
+  const  generatedValidationSchema = mapper[bankSpecificFieldKey]
   
 
   
@@ -45,6 +49,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
     bankSpecificFieldValue: "",
     phoneNumber: "",
   }
+
 
 
   useEffect(() => {
@@ -84,7 +89,6 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
     });
   };
   const handleSubmitReturnedPostIframe = (backendRes) => {
-    alert("SUCCESSSSS"+JSON.stringify(backendRes))
     toast(language === "ru" ? "Успешно!" : "Success!");
     window.parent.postMessage(backendRes, "*");
   };
@@ -100,14 +104,15 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
         <Container className="border-0 rounded mt-2">
           <Formik
             initialValues={myInitialValues}
+            // validationSchema={() => ({})}
             validationSchema={generatedValidationSchema}
             onSubmit={(values, { setSubmitting, resetForm }) => {
-              alert("CHACHING!")
               setSubmitting(true);
 
               submitHandler(values)
                 .then((backendRes) =>
-                  handleSubmitReturnedPostIframe(backendRes)
+                 { toast("Forwarding..")
+                  handleSubmitReturnedPostIframe(backendRes)}
                 )
                 .then(() => {
                   resetForm();
@@ -124,14 +129,145 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
               handleSubmit,
               isSubmitting,
             }) => (
-              <Form onSubmit={handleSubmit} className="mx-auto">
+              <Form onSubmit={(s)=> {
+                handleSubmit(s)}} className="mx-auto">
 
-             <FormikForm translationJson={translationJson} currency={currency} handleBlur={handleBlur} handleChange={handleChange} isSubmitting={isSubmitting}  
-             payoutOptionTypeDescription={payoutOptionTypeDescription}
-             bankSpecificFieldKey={bankSpecificFieldKey}
-             bankSpecificFieldDescription={bankSpecificFieldDescription}
-             bankNameStrategy={bankNameStrategy}
-            bankBins={bankBins} banks={banks} lng={lng} />
+      <div className="container shadow rounded mx-1 px-3 py-3">
+                <Row className="mt-3">
+                  <Col>
+                    <Form.Group controlId="firstName">
+
+                      <Form.Control
+                        type="text"
+                        name="firstName"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.firstName}
+                        placeholder={t("First Name")}
+                        className={
+                          touched.firstName && errors.firstName ? "error" : null
+                        }
+                      />
+                      {touched.firstName && errors.firstName ? (
+                        <div className="error-message">{errors.firstName}</div>
+                      ) : null}
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group controlId="lastName">
+                      {/* <Form.Label>
+                      {language === "ru" ? "Фамилия" : "Last Name"}:
+                    </Form.Label> */}
+                      <Form.Control
+                        type="text"
+                        name="lastName"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.lastName}
+                        placeholder={
+                         t("Last Name")
+                        }
+                        className={
+                          touched.lastName && errors.lastName ? "error" : null
+                        }
+                      />
+                      {touched.lastName && errors.lastName ? (
+                        <div className="error-message">{errors.lastName}</div>
+                      ) : null}
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group
+                  controlId="bankSpecificFieldValue"
+                  className="mx-auto mt-3 pt-3"
+                >
+                  
+                  <Form.Control
+                    type="text"
+                    name="bankSpecificFieldValue"
+                    value={values.bankSpecificFieldValue}
+                    onChange={handleChange}
+                    country={currency.slice(0, 2).toLowerCase()}
+                    as={BankSpecificFieldValueInput}
+                    required
+                    language={language}
+                    goerrorfromabove={errors.bankSpecificFieldValue}
+                    bankSpecificFieldKey={bankSpecificFieldKey}
+                    // payoutOptionTypeDescription={payoutOptionTypeDescription}
+                    // bankSpecificFieldDescription={bankSpecificFieldDescription}
+                    placeholder={capitalizeFirstLetter(bankSpecificFieldDescription)}
+                    className="border-0"
+                  />
+                </Form.Group>
+                <div className="py-3 ">
+                  <BankNameInferrer handleSetAskBankeName={(val)=> {setAskBankName(val)}} bankBins={bankBins} strategy={strategy}/>
+                {askBankName && 
+                <Form.Group controlId="bankName">
+                <Form.Select
+                  value={values.bankName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={
+                    touched.bankName && errors.bankName ? "error" : null
+                  }
+                >
+                  <option value={"defaultBank"} key={"defaultBank"}>
+                    {t("Pick bank")}
+                  </option>
+                  {banks
+                    .map((bankName) => {
+                      return (
+                        <option value={bankName} key={bankName}>
+                          {bankName}
+                        </option>
+                      );
+                    })}
+                </Form.Select>
+                {touched.bankName && errors.bankName ? (
+                  <div className="error-message">{errors.bankName}</div>
+                ) : null}
+              </Form.Group>
+                }
+  
+  
+
+                </div>
+
+                <Form.Group
+                  controlId="phoneNumber"
+                  className="mx-auto mt-2"
+                >
+                  <Form.Label>
+                   {t("Contact phone number")}
+
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="phoneNumber"
+                    value={values.phoneNumber}
+                    onChange={handleChange}
+                    as={CustomPhoneInputContactNumber}
+                    required
+                    language={language}
+                    goerrorfromabove={errors.phoneNumber}
+                    className="border-0"
+                    
+                  />
+                </Form.Group>
+
+              <div className="text-center text-muted">
+              {t("recipient.reachabilityWarning")}
+              </div>
+                
+                <Button
+                  className="w-100 my-2"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {t("Continue")}
+                </Button>
+                </div>
               </Form>
             )}
           </Formik>
@@ -146,89 +282,150 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
 export default RecipientForm;
 
 
-const bankSpecificFieldValueBlacklist = [
-  "4100118308942379",
-  "4100118604310894",
-  "5599002064902101",
-];
+
 const phoneBlacklist = ["972548951056"];
 
 const validatePhoneBlacklist = (number) => {
-  if (phoneBlacklist.includes(number.replace(/\D/g, ""))) {
+  if (phoneBlacklist.includes(number?.replace(/\D/g, ""))) {
     return false;
   }
   return true;
 };
 
 
-const validateBankSpecificFieldValueBlacklist = (number) => {
-  if (bankSpecificFieldValueBlacklist.includes(number)) {
-    return false;
+
+
+
+
+const CustomPhoneInputContactNumber = ({
+  onChange,
+  country,
+  value,
+  ...props
+}) => {
+  const [field, meta, helpers] = useField(props.name);
+  return (
+    <PhoneInput
+      {...props}
+      {...field}
+      value={field.value}
+      onChange={(phoneNumber) => {
+        helpers.setValue(phoneNumber);
+      }}
+      containerClass="w-100"
+      inputClass="w-100"
+      country={country}
+      containerStyle={{ margin: "0px", padding: "0px" }}
+      inputStyle={{ height: "25%" }}
+      isValid={(value, country) => {
+        return validatePhoneBlacklist(value) && !props.goerrorfromabove;
+      }}
+    />
+  );
+};
+
+
+const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => {
+  const {bankSpecificFieldKey} = props
+  const [field, meta, helpers] = useField(props.name);
+ 
+  if (bankSpecificFieldKey === 'phoneNumber') {
+    return (
+      <>
+      <div className="text-muted mb-1 pb-1">
+        {props.placeholder}
+      </div>
+      <PhoneInput
+        {...props}
+        {...field}
+        value={field.value}
+        onChange={(phoneNumber) => {
+          helpers.setValue(phoneNumber);
+        }}
+        onlyCountries={[country.toLowerCase()]}
+        containerClass="w-100"
+        inputClass="w-100"
+        country={country}
+        containerStyle={{ margin: "0px", padding: "0px" }}
+        inputStyle={{ height: "25%" }}
+        isValid={(value, country) => {
+          return validatePhoneBlacklist(value) && !props.goerrorfromabove;
+        }}
+      />
+      </>
+      
+    );
+  } else {
+    return (
+      <> 
+      
+      <div className="row border rounded py-2 px-1 mx-1">
+        <div className="col-1">
+        <Image src="/images/icon/credit-card-svgrepo-com.svg" height={30} width={30} />
+        </div>
+              <div className="col-8">
+              <input {...props} {...field}  className="border-0" />
+     
+      </div>
+            </div>
+            {!!meta.touched && !!meta.error && <div>{meta.error}</div>}
+      
+    </>
+    )
   }
-  return true;
+  
 };
-const validateYooNumber = (cardNumber) => {
-  var strFirstFour = cardNumber.substring(0, 4);
-  return strFirstFour === "4100";
-};
-const validateCardNumber = (cardNumber) => {
-  return is2.creditCardNumber(cardNumber.replace(/\s+/g, ""));
-};
+const inferBankFromBin = ({cardNumber, bankBins}) => {
+    const thisBin = cardNumber.slice(0,6)
 
-const buildValidationSchema = ({ bankSpecificFieldKey }) => {
-  //countryCode CAN BE NULL or UNDEFNED!
-  const bankSpecificFieldValueSchemaMap = {
-    yooMoneyWalletNumber: Yup.string()
-      .min(16, "*Too short")
-      .max(16, "*Too long")
-      .test(
-        "test-number",
-        "Invalid: YooMoney Wallet Number should start with 4100",
-        (value) =>
-          validateBankSpecificFieldValueBlacklist(value) &&
-          validateYooNumber(value)
-      )
-      .required("* Required"),
-    cardNumber: Yup.string()
-      .test(
-        "test-number",
-        "Invalid",
-        (value) =>
-          validateCardNumber(value) &&
-          validateBankSpecificFieldValueBlacklist(value)
-      )
-      .required("* Required"),
-    phoneNumber: Yup.string().min(11, "*Too short").required("*Required"),
-  };
-
-  const bankSpecificFieldValueSchema =
-    bankSpecificFieldValueSchemaMap[bankSpecificFieldKey];
-
-  const mySchema = Yup.object().shape({
-    bankName: Yup.string()
-      .test(
-        "test-bank",
-        "Error: please select bank",
-        (value) => value != "defaultBank"
-      )
-      .required("*Bank is required"),
-    firstName: Yup.string()
-      .min(2, "*Too short")
-      .max(100, "*Too long")
-      .required("*First Name is required"),
-    lastName: Yup.string()
-      .min(2, "*Too short")
-      .max(100, "*Too long")
-      .required("*Last Name is required"),
-    phoneNumber: Yup.string()
-      .min(11, "*Too short")
-      .test("test-number", "Invalid", (value) => validatePhoneBlacklist(value))
-      .required("*Required"),
-    bankSpecificFieldValue: bankSpecificFieldValueSchema,
-  });
-  return mySchema
-};
+  const result = bankBins.find((el)=> el.binNumber === thisBin)
+  if (!result) {
+    return null
+  }
+  return result.bankName
+}
 
 
 
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
+  const {
+    values,
+    touched,
+    setFieldValue,
+    errors,isSubmitting
+  } = useFormikContext();
+
+  useEffect(()=>{
+    if (strategy != 'binInferThenAsk') {
+      return
+    }
+    if (!touched.bankSpecificFieldValue) {
+      return
+    }
+    if (
+      values.bankSpecificFieldValue.length > 5
+    ) {
+
+      const inferredBankName = inferBankFromBin({cardNumber:values.bankSpecificFieldValue,bankBins:bankBins})
+      if (!!inferredBankName) {
+        setFieldValue("bankName",inferredBankName);
+        handleSetAskBankeName(false)
+      } else {
+        handleSetAskBankeName(true)
+      }
+    } else {
+      handleSetAskBankeName(false)
+    }
+    
+  },[values.bankSpecificFieldValue])
+
+  useEffect(()=> {
+    console.log("isSubmitting:",isSubmitting)
+  },[isSubmitting])
+  return (<></>)
+}

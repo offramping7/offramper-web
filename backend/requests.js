@@ -13,7 +13,6 @@ export const getGeoInfo = async () => {
 
   export const createOfframpAddress = async (payload) => {
     const url = "/api/createOfframpAddress"
-    return {address:"123",blockchain:"123",cryptocurrency:"123"}
     return axios.post(url,payload).then((res) => {
         console.log("GO THE REESSSSSS",res.data)
         return res.data
