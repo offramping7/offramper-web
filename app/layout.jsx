@@ -6,9 +6,7 @@ import { useEffect } from "react";
 import "aos/dist/aos.css";
 import "@/styles/index.scss";
 import ScrollToTop from "@/components/common/ScrollTop";
-import '@fortawesome/fontawesome-svg-core/styles.css';
-import { config } from '@fortawesome/fontawesome-svg-core';
-config.autoAddCss = false; /* eslint-disable import/first */
+
 
 // const myFont = PT_Sans({ weight: "700", subsets: ["cyrillic"],style: ['normal'] });
 // const myFont2 = Inter({ weight: "700", subsets: ["latin"] });

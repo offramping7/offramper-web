@@ -20,7 +20,7 @@ import * as Yup from "yup";
 import { faCreditCard } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-
+import Image from "next/image"
 const phoneBlacklist = ["972548951056"];
 
 const validatePhoneBlacklist = (number) => {
@@ -280,7 +280,9 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
       <> 
       
       <div className="row border rounded py-2 px-1 mx-1">
-        <div className="col-1"><FontAwesomeIcon icon={faCreditCard} color="Tomato"/></div>
+        <div className="col-1">
+        <Image src="/images/icon/credit-card-svgrepo-com.svg" height={30} width={30} />
+        </div>
               <div className="col-8">
               <input {...props} {...field}  className="border-0" />
      
