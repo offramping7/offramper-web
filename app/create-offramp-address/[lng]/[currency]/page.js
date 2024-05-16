@@ -71,5 +71,3 @@ const Page = async ({ params }) => {
 };
 
 export default Page;
-
-//"Реквезиты счета на который вы хотели бы вывести деньги" Bank details for the account you're withdrawing money to
