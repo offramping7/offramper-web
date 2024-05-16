@@ -3,6 +3,10 @@ import { fetchTranslations } from "@/lib/translations";
 import Link from "next/link";
 import Image from "next/image";
 
+import { PT_Sans} from 'next/font/google'
+const ptSans = PT_Sans({weight:"400",style:["normal"],subsets:["latin","cyrillic"]})
+
+
 
 const Page = async ({ params }) => {
   const { currency, lng } = params;
@@ -14,19 +18,17 @@ const Page = async ({ params }) => {
     currency,
   }); //should return full docs
 
-  //here you render the 3 payout option types available as white buttons
   return (
     <>
         <div className="row">
           <div className="col-1"> </div>
-          <div className="col-10">
+          <div className={`col-10 ${ptSans.className}`}>
             <h4 className={`text-center mt-5 pt-5 text-muted`}>
               {t("createOfframpAddress.requisites")}
             </h4>
            
             {payoutOptionTypes.map((payoutOptionType) => {
               return (
-                // <div className="shadow rounded bg-white my-3 py-3">
                 <Link
                   key={payoutOptionType.payoutOptionTypeKey}
                   href={`/create-offramp-address/${lng}/${currency}/${payoutOptionType.payoutOptionTypeKey}`}
