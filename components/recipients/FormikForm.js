@@ -17,8 +17,7 @@ import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import * as Yup from "yup";
-import { faCreditCard } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 import Image from "next/image"
 const phoneBlacklist = ["972548951056"];
