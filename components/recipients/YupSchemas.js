@@ -6,7 +6,7 @@ export const RecipientSchemaForYooMoneyWalletNumber =  Yup.object().shape({
       .test(
         "test-bank",
         "Error: please select bank",
-        (value) => value != "defaultBank"
+        (value) => !!value && value?.length > 1
       )
       .required("*Bank is required"),
     firstName: Yup.string()
