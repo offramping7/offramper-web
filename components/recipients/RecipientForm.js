@@ -43,7 +43,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
   const language = 'ru'
 
   const myInitialValues = {
-    bankName: strategy === 'fixedValue' ? bankNameFixedValue : "defaultBank",
+    bankName: strategy === 'fixedValue' ? bankNameFixedValue : "",
     firstName: "",
     lastName: "",
     bankSpecificFieldValue: "",
@@ -201,7 +201,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
                   />
                 </Form.Group>
                 <div className="py-3 ">
-                  <BankNameInferrer handleSetAskBankeName={(val)=> {setAskBankName(val)}} bankBins={bankBins} strategy={strategy}/>
+                  <BankNameInferrer banks={banks} handleSetAskBankeName={(val)=> {setAskBankName(val)}} bankBins={bankBins} strategy={strategy}/>
                 {askBankName && 
                 <Form.Group controlId="bankName">
                 <Form.Select
@@ -376,12 +376,14 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
   
 };
 const inferBankFromBin = ({cardNumber, bankBins}) => {
-    const thisBin = cardNumber.slice(0,6)
+  const thisBin = cardNumber.slice(0,6)
 
   const result = bankBins.find((el)=> el.binNumber === thisBin)
   if (!result) {
+    console.log("bin lookup result: null")
     return null
   }
+  console.log("bin lookup result: ", result.bankName)
   return result.bankName
 }
 
@@ -392,7 +394,7 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
+const BankNameInferrer = ({banks,bankBins,strategy,handleSetAskBankeName}) => {
   const {
     values,
     touched,
@@ -400,32 +402,45 @@ const BankNameInferrer = ({bankBins,strategy,handleSetAskBankeName}) => {
     errors,isSubmitting
   } = useFormikContext();
 
-  useEffect(()=>{
-    if (strategy != 'binInferThenAsk') {
-      return
-    }
-    if (!touched.bankSpecificFieldValue) {
-      return
-    }
-    if (
-      values.bankSpecificFieldValue.length > 5
-    ) {
+  
 
-      const inferredBankName = inferBankFromBin({cardNumber:values.bankSpecificFieldValue,bankBins:bankBins})
+  useEffect(()=>{
+    console.log("bankSpecificFieldValue use effect triggered..")
+    if (strategy != 'binInferThenAsk') {
+      console.log("omit infer, strategy is not binInferThenAsk")
+      return
+    }
+    // if (!touched.bankSpecificFieldValue) {
+    //   console.log("omit infer, not touched")
+    //   return
+    // }
+    if (
+      values.bankSpecificFieldValue.replace(" ","").length > 5
+    ) {
+      console.log("going to infer now..")
+      const inferredBankName = inferBankFromBin({cardNumber:values.bankSpecificFieldValue.replace(" ",""),bankBins:bankBins})
       if (!!inferredBankName) {
+        console.log("i have inferred!: ", inferredBankName)
         setFieldValue("bankName",inferredBankName);
         handleSetAskBankeName(false)
       } else {
+        console.log("failed to infer: ")
+        setFieldValue("bankName","");
         handleSetAskBankeName(true)
       }
     } else {
+      console.log("omit inferring cuz too short.")
+      setFieldValue("bankName","");
       handleSetAskBankeName(false)
     }
     
   },[values.bankSpecificFieldValue])
 
+
   useEffect(()=> {
-    console.log("isSubmitting:",isSubmitting)
-  },[isSubmitting])
+    console.log("use effec triggered for bank name:", values.bankName || null)
+  }, [values.bankName])
+
+
   return (<></>)
 }
