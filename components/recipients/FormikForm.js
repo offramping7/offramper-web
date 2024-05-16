@@ -9,9 +9,7 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import { createOfframpAddress, getGeoInfo } from "@/backend/requests";
-import * as is2 from "is2";
-import { ToastContainer,toast } from "react-toastify";
+
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -133,7 +131,7 @@ const FormikForm = ({translationJson,handleBlur, handleChange,isSubmitting,payou
                     as={BankSpecificFieldValueInput}
                     required
                     language={language}
-                    gotErrorFromAbove={errors.bankSpecificFieldValue}
+                    goerrorfromabove={errors.bankSpecificFieldValue}
                     bankSpecificFieldKey={bankSpecificFieldKey}
                     // payoutOptionTypeDescription={payoutOptionTypeDescription}
                     // bankSpecificFieldDescription={bankSpecificFieldDescription}
@@ -190,7 +188,7 @@ const FormikForm = ({translationJson,handleBlur, handleChange,isSubmitting,payou
                     as={CustomPhoneInputContactNumber}
                     required
                     language={language}
-                    gotErrorFromAbove={errors.phoneNumber}
+                    goerrorfromabove={errors.phoneNumber}
                     className="border-0"
                     
                   />
@@ -233,7 +231,7 @@ const CustomPhoneInputContactNumber = ({
       containerStyle={{ margin: "0px", padding: "0px" }}
       inputStyle={{ height: "25%" }}
       isValid={(value, country) => {
-        return validatePhoneBlacklist(value) && !props.gotErrorFromAbove;
+        return validatePhoneBlacklist(value) && !props.goerrorfromabove;
       }}
     />
   );
@@ -268,7 +266,7 @@ const BankSpecificFieldValueInput = ({ onChange, country, value, ...props }) => 
         containerStyle={{ margin: "0px", padding: "0px" }}
         inputStyle={{ height: "25%" }}
         isValid={(value, country) => {
-          return validatePhoneBlacklist(value) && !props.gotErrorFromAbove;
+          return validatePhoneBlacklist(value) && !props.goerrorfromabove;
         }}
       />
       </>

@@ -69,7 +69,8 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
       phoneNumber: values.phoneNumber,
       bankSpecificFieldValue: values.bankSpecificFieldValue,
     };
-        return createOfframpAddress(addOfframpAddressPayload).then((data) => {
+    return createOfframpAddress(addOfframpAddressPayload).then((data) => {
+      console.log("submitHandler res is:", data)
       const { address, blockchain, cryptocurrency } = data;
       if (!!address && !!blockchain && !!cryptocurrency) {
         const backendRes = {
@@ -83,6 +84,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
     });
   };
   const handleSubmitReturnedPostIframe = (backendRes) => {
+    alert("SUCCESSSSS"+JSON.stringify(backendRes))
     toast(language === "ru" ? "Успешно!" : "Success!");
     window.parent.postMessage(backendRes, "*");
   };
@@ -100,6 +102,7 @@ const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecifi
             initialValues={myInitialValues}
             validationSchema={generatedValidationSchema}
             onSubmit={(values, { setSubmitting, resetForm }) => {
+              alert("CHACHING!")
               setSubmitting(true);
 
               submitHandler(values)
