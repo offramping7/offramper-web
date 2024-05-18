@@ -1,8 +1,8 @@
 import { fetchAvailablePayoutOptionTypesByCurrency } from "@/lib/payoutOptionTypes";
 import { fetchTranslations } from "@/lib/translations";
-import Link from "next/link";
-import Image from "next/image";
-
+import {fetchBankNamesByCurrency} from "@/lib/banks"
+import {fetchBankBinsByCurrency} from "@/lib/bankBins"
+import CreateOfframpAddressMain from "@/components/recipients/CreateOfframpAddressMain"
 import { PT_Sans} from 'next/font/google'
 const ptSans = PT_Sans({weight:"400",style:["normal"],subsets:["latin","cyrillic"]})
 
@@ -17,6 +17,8 @@ const Page = async ({ params }) => {
   const payoutOptionTypes = await fetchAvailablePayoutOptionTypesByCurrency({
     currency,
   }); //should return full docs
+  const banks = await fetchBankNamesByCurrency({currency})
+    const bankBins = await fetchBankBinsByCurrency({currency})
 
   return (
     <>
@@ -27,42 +29,7 @@ const Page = async ({ params }) => {
               {t("createOfframpAddress.requisites")}
             </h4>
            
-            {payoutOptionTypes.map((payoutOptionType) => {
-              return (
-                <Link
-                  key={payoutOptionType.payoutOptionTypeKey}
-                  href={`/create-offramp-address/${lng}/${currency}/${payoutOptionType.payoutOptionTypeKey}`}
-                  className={`shadow rounded bg-white my-3 py-3 w-100 gradient-bg-maker-wiener`}
-                >
-                  <div className="row mx-auto">
-                    <div className="col-3">
-                      <Image
-                        src={payoutOptionType.logoPath}
-                        width={70}
-                        height={70}
-                        alt="Picture of the author"
-                        className="float-end"
-                      />
-                    </div>
-                    <div className="col-9 my-auto">
-                      <div className="text-muted text-white">
-                        {payoutOptionType.payoutOptionTypeDescriptions[lng]}
-                      </div>
-                      <div className="text-muted">
-                        {t("to")}{" "}
-                        {payoutOptionType.bankSpecificFieldDescriptions[lng]}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* {JSON.stringify(payoutOptionType)} */}
-                </Link>
-                // </div>
-              );
-            })}
-            <h6 className="text-center text-muted mt-3">
-              {t("createOfframpAddress.bottomText")}
-            </h6>
+            <CreateOfframpAddressMain bankBins={bankBins} banks={banks} payoutOptionTypes={payoutOptionTypes} translationJson={translationJson} currency={currency} lng={lng} />
           </div>
           <div className="col-1"> </div>
         </div>

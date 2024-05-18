@@ -17,18 +17,24 @@ import "react-toastify/dist/ReactToastify.css";
 import { Formik, useField, useFormikContext } from "formik";
 import Image from "next/image"
 import {RecipientSchemaForYooMoneyWalletNumber,RecipientSchemaForPhoneNumber,RecipientSchemaForCardNumber} from "./YupSchemas"
-// Schema for yup
 
 
-const RecipientForm = ({ translationJson,payoutOptionTypeDescription,bankSpecificFieldKey,bankSpecificFieldDescription,bankNameStrategy, currency, bankBins, banks,lng }) => {
+const RecipientForm = ({ payoutOptionTypes,payoutOptionTypeKey, bankBins, banks,currency,translationJson,lng }) => {
+
+  const t = (str) => {
+    return translationJson[str] || sts
+}
+
+  const payoutOptionTypeData = payoutOptionTypes.find((payoutOptionType)=> payoutOptionType.payoutOptionTypeKey === payoutOptionTypeKey)
+  const {payoutOptionTypeDescriptions,bankSpecificFieldKey,bankSpecificFieldDescriptions, bankNameStrategy} = payoutOptionTypeData
+  const payoutOptionTypeDescription = payoutOptionTypeDescriptions[lng]
+    const bankSpecificFieldDescription = bankSpecificFieldDescriptions[lng]
   const [locError, setLocError] = useState(false);
   const bankNameFixedValue = bankNameStrategy?.value
   const {strategy} = bankNameStrategy
   const [askBankName,setAskBankName] = useState(strategy === 'ask')
   
-  const t = (str) => {
-    return translationJson[str] || str
-  }
+ 
   
   const mapper = {
     cardNumber:RecipientSchemaForCardNumber,
