@@ -117,7 +117,7 @@ const RecipientForm = ({ payoutOptionTypes,payoutOptionTypeKey, bankBins, banks,
 
               submitHandler(values)
                 .then((backendRes) =>
-                 { toast("Forwarding..")
+                 { 
                   handleSubmitReturnedPostIframe(backendRes)}
                 )
                 .then(() => {
