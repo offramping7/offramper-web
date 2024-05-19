@@ -138,7 +138,7 @@ const RecipientForm = ({ payoutOptionTypes,payoutOptionTypeKey, bankBins, banks,
               <Form onSubmit={(s)=> {
                 handleSubmit(s)}} className="mx-auto">
 
-      <div className="container shadow rounded mx-1 px-3 py-3">
+      <div className="container shadow rounded mx-1 py-3">
                 <Row className="mt-3">
                   <Col>
                     <Form.Group controlId="firstName">
