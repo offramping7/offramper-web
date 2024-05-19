@@ -23,15 +23,15 @@ const Page = async ({ params }) => {
   return (
     <>
         <div className="row">
-          <div className="col-1"> </div>
-          <div className={`col-10 ${ptSans.className}`}>
+          {/* <div className="col-1"> </div> */}
+          <div className={`col-12 ${ptSans.className}`}>
             <h4 className={`text-center mt-5 pt-5 text-muted`}>
               {t("createOfframpAddress.requisites")}
             </h4>
            
             <CreateOfframpAddressMain bankBins={bankBins} banks={banks} payoutOptionTypes={payoutOptionTypes} translationJson={translationJson} currency={currency} lng={lng} />
           </div>
-          <div className="col-1"> </div>
+          {/* <div className="col-1"> </div> */}
         </div>
     </>
   );

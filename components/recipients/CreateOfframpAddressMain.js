@@ -18,13 +18,14 @@ const CreateOfframpAddressMain = ({
   };
 
   if (chosenPayoutOptionTypeKey === "menu") {
-    return (
+    return ( <div className="mx-3">
       <PayoutOptionTypesMenu
         handleChangeChosenPayoutOptionTypeKey={handleChangeChosenPayoutOptionTypeKey}
         payoutOptionTypes={payoutOptionTypes}
         translationJson={translationJson}
         lng={lng}
       />
+      </div>
     );
   } else {
     return <RecipientForm 
@@ -36,6 +37,7 @@ const CreateOfframpAddressMain = ({
       translationJson={translationJson}
       lng={lng}
       />
+    
   
     
   }
